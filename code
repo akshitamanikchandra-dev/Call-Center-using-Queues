@@ -1,0 +1,120 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+const int MAX = 100; // Maximum queue size
+
+struct Call {
+    int id;
+    string callerName;
+    string issue;
+};
+
+// Array-based queue
+struct CallQueue {
+    Call calls[MAX];
+    int front = -1;
+    int rear = -1;
+
+    bool isEmpty() {
+        return front == -1 || front > rear;
+    }
+
+    bool isFull() {
+        return rear == MAX - 1;
+    }
+
+    void enqueue(Call c) {
+        if (isFull()) {
+            cout << "Queue is full! Cannot receive new call.\n";
+            return;
+        }
+        if (isEmpty()) {
+            front = 0;
+        }
+        rear++;
+        calls[rear] = c;
+        cout << "Call added to queue.\n";
+    }
+
+    Call dequeue() {
+        if (isEmpty()) {
+            cout << "Queue is empty! No calls to handle.\n";
+            return Call{-1, "", ""};
+        }
+        Call c = calls[front];
+        front++;
+        return c;
+    }
+
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+        cout << "Current Calls in Queue:\n";
+        for (int i = front; i <= rear; i++) {
+            cout << "ID: " << calls[i].id << ", Caller: " << calls[i].callerName << "\n";
+        }
+    }
+};
+
+// Function to receive call
+Call receiveCall(int id) {
+    Call c;
+    c.id = id;
+    cout << "Enter caller name: ";
+    cin >> c.callerName;
+    cout << "Enter issue description: ";
+    cin.ignore();
+    getline(cin, c.issue);
+    return c;
+}
+
+// Function to handle call
+void handleCall(Call c) {
+    if (c.id == -1) return; // Empty queue
+    cout << "\nHandling Call ID: " << c.id << endl;
+    cout << "Caller: " << c.callerName << endl;
+    cout << "Issue: " << c.issue << endl;
+    cout << "Call handled successfully!\n\n";
+}
+
+int main() {
+    CallQueue callQueue;
+    int choice;
+    int callID = 1;
+
+    while (true) {
+        cout << "\n=== Call Center Menu ===\n";
+        cout << "1. Receive Call\n";
+        cout << "2. Handle Call\n";
+        cout << "3. Display Queue\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                Call c = receiveCall(callID++);
+                callQueue.enqueue(c);
+                break;
+            }
+            case 2: {
+                Call c = callQueue.dequeue();
+                handleCall(c);
+                break;
+            }
+            case 3: {
+                callQueue.display();
+                break;
+            }
+            case 4:
+                cout << "Exiting program...\n";
+                return 0;
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+    }
+}
